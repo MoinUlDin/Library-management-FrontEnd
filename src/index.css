@@ -1,1 +1,18 @@
+:root {
+  /* default (light) – these will get overwritten in JS */
+  --color-primary: #1e3a8a;
+  --color-secondary: #9333ea;
+  --color-accent: #f59e0b;
+  --color-background: #ffffff;
+  --color-text: #111827;
+}
+
+/* Optional: a .dark class if you want to scope dark-mode */
+.dark {
+  --color-primary: #3b82f6;
+  --color-secondary: #8b5cf6;
+  --color-accent: #fbbf24;
+  --color-background: #1f2937;
+  --color-text: #f9fafb;
+}
 @import "tailwindcss";
