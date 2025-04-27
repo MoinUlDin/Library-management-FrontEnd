@@ -73,10 +73,8 @@ function Login() {
     }
     setIsLoading(true);
     try {
-      // Call the loginUser service
-      const data = await UserService.loginUser(formData);
+      const data = await UserService.loginUser(formData, dispatch);
 
-      // Dispatch login to Redux
       dispatch(login(data));
       // if (data?.role == "END_USER") {
       //   clearAuthData();
@@ -87,7 +85,10 @@ function Login() {
       navigate("/dashboard");
     } catch (err) {
       console.log(err);
-      setError(err.message); // Show error message from service
+      const message = err.message || "Unknown Error";
+      setToastMessage(message); // Show error message from service
+      setError(message); // Show error message from service
+      setShowToast(true);
     } finally {
       setIsLoading(false);
     }
@@ -128,6 +129,7 @@ function Login() {
       >
         <Logo />
         <Title css="mt-2">Login</Title>
+
         {/* Email Input with added bottom margin */}
         <TextField
           id="username"

@@ -1,10 +1,15 @@
-:root {
+@import "tailwindcss";
+
+@theme {
   /* default (light) – these will get overwritten in JS */
   --color-primary: #1e3a8a;
   --color-secondary: #9333ea;
   --color-accent: #f59e0b;
   --color-background: #ffffff;
   --color-text: #111827;
+  --spacing-sidebar: 17rem;
+  --spacing-sidebarCollapsed: 4rem;
+  --spacing-sidebarPadding: 8px;
 }
 
 /* Optional: a .dark class if you want to scope dark-mode */
@@ -15,4 +20,7 @@
   --color-background: #1f2937;
   --color-text: #f9fafb;
 }
-@import "tailwindcss";
+
+.ptr {
+  @apply hover:cursor-pointer transition-all duration-300 ease-in-out;
+}

@@ -1,38 +1,24 @@
 // services/userServices.js
 import apiClient from "./apiClient"; // set up with Axios
-
-// Helper to convert a string from snake_case to camelCase.
-const toCamelCase = (str) => {
-  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-};
-
-// Recursively convert all keys in an object (or array) to camelCase.
-const convertKeysToCamelCase = (obj) => {
-  if (Array.isArray(obj)) {
-    return obj.map(convertKeysToCamelCase);
-  } else if (obj !== null && typeof obj === "object") {
-    return Object.keys(obj).reduce((acc, key) => {
-      acc[toCamelCase(key)] = convertKeysToCamelCase(obj[key]);
-      return acc;
-    }, {});
-  }
-  return obj;
-};
+import { login, clearAuthData } from "../features/authSlice";
 
 class UserService {
   // Login Method
-  static async loginUser(formData) {
+  static async loginUser(formData, dispatch) {
     try {
       const response = await apiClient.post("auth/login/", formData);
       // Convert the response data to camelCase.
       const data = response.data;
       // Store the entire object in localStorage.
       localStorage.setItem("userData", JSON.stringify(data));
+      dispatch(login(data)); // Dispatch the login action with the data
       return data; // Return data to the component
     } catch (error) {
       console.log(error);
       const errorMessage =
         error.response?.data?.non_field_errors ||
+        error.response?.data?.detail ||
+        error.message ||
         "Login failed. Please try again.";
       throw new Error(errorMessage);
     }
@@ -52,11 +38,12 @@ class UserService {
   }
   static async registerUser(payload) {
     try {
-      const response = await apiClient.post("users/register/", payload);
+      const response = await apiClient.post("auth/register/member/", payload);
       return response.data;
     } catch (error) {
+      console.log("myError report", error);
       const errorMessage =
-        error.response?.data?.non_field_errors ||
+        error.response?.data?.password ||
         error.response?.data?.email ||
         "Registrations Failed.";
       throw new Error(errorMessage);
@@ -71,6 +58,11 @@ class UserService {
       const message = error?.response?.data?.message || "Unkown Error";
       throw new Error(message);
     }
+  }
+  static async logout(dispatch) {
+    localStorage.removeItem("userData"); // Clear user data from localStorage
+    dispatch(clearAuthData()); // Dispatch action to clear auth data in Redux store
+    return true;
   }
   static async fetchUserList(dispatch) {
     try {

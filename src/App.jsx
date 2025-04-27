@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
+import {
+  Login,
+  Register,
+  Home,
+  MemberManagement,
+  BookManagement,
+  OnlineReservations,
+  Settings,
+  Reports,
+} from "./pages";
 import DashbordLayout from "./components/DashboardLayout";
-import Home from "./pages/Home";
-import Dashboard from "./pages/Home";
+
 import "./App.css";
 
 function App() {
@@ -13,9 +21,14 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<DashbordLayout />}>
           <Route path="" element={<Home />} />
-          <Route path="books" element={<h1>Book Management</h1>} />
+          <Route path="books/records" element={<BookManagement />} />
+          <Route path="members" element={<MemberManagement />} />
+          <Route path="reservations" element={<OnlineReservations />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         <Route

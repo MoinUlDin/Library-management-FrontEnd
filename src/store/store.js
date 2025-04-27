@@ -1,8 +1,9 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "../features/authSlice";
+import themeReducer from "../features/themeSlice";
 
 // Combine all your reducers.
-const appReducer = combineReducers({ authReducer });
+const appReducer = combineReducers({ authReducer, themeReducer });
 
 // Create a root reducer that resets state on logout.
 const rootReducer = (state, action) => {

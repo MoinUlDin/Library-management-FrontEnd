@@ -18,9 +18,10 @@ const authSlice = createSlice({
       state.refreshToken = action.payload;
     },
     login(state, action) {
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
-      state.userData = action.payload.userData;
+      console.log("Login action payload:", action.payload);
+      state.accessToken = action.payload.access;
+      state.refreshToken = action.payload.refresh;
+      state.userData = action.payload.role;
     },
     setList(state, action) {
       state.list = action.payload;
