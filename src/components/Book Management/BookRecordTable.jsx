@@ -1,37 +1,53 @@
-// src/components/MainContent.jsx
+// src/components/BookRecordTable.jsx
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiBookOpen, FiEdit, FiTrash2 } from "react-icons/fi";
 import BookServices from "../../services/BookServices";
 import Toast from "../childrens/FloatingMessage";
-import { Tooltip } from "@mui/material";
+import { Tooltip, IconButton } from "@mui/material";
+import BookHeaderButtons from "./BookHeaderButtons";
+import AddEditBook from "../Forms/Book Management Forms/AddEditBookForm";
+import { CiWarning } from "react-icons/ci";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function BookRecordTable() {
-  const [rows, setRows] = useState([]);
+  const bookList = useSelector((state) => state.book.bookList);
   const [loading, setLoading] = useState(true);
   const [showToast, setShowToast] = useState(false);
+  const [existingBook, setExistingBook] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [viewMode, setViewMode] = useState("table"); // "table" | "grid"
+  const [statusFilter, setStatusFilter] = useState("all"); // "all" | "write-off" | "lost"
+
+  const [showEditForm, setShowEditForm] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    BookServices.getAllBooks()
-      .then((data) => setRows(data))
+    setLoading(true);
+    BookServices.getAllBooks(dispatch)
       .catch((err) => {
         console.error(err);
         setToastMessage("Failed to load books");
         setShowToast(true);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [dispatch]);
 
   const handleEdit = (id) => {
-    setToastMessage(`Edit book #${id}`);
-    setShowToast(true);
+    bookList &&
+      bookList.map((item) => {
+        if (item.id == id) {
+          setExistingBook(item);
+          setShowEditForm(true);
+        }
+      });
   };
   const handleDelete = (id) => {
     setToastMessage(`Delete book #${id}`);
     setShowToast(true);
   };
 
+  // === Restore your columns definition ===
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "title", headerName: "Title", flex: 1, minWidth: 150 },
@@ -44,11 +60,36 @@ export default function BookRecordTable() {
     { field: "rack_no", headerName: "Rack No.", width: 100 },
     { field: "shelf_location", headerName: "Shelf Loc.", width: 130 },
     {
+      field: "language",
+      headerName: "Language",
+      width: 100,
+      renderCell: (params) => {
+        const lang = params.row.language?.name || "-";
+        return <span>{lang}</span>;
+      },
+    },
+    {
+      field: "department",
+      headerName: "Department",
+      width: 100,
+      renderCell: (params) => {
+        const depart = params.row.department?.name || "-";
+        return <p>{depart}</p>;
+      },
+    },
+    {
+      field: "categories",
+      headerName: "Category",
+      width: 100,
+      renderCell: (params) => {
+        const cat = params.row.category?.name || "-";
+        return <p>{cat}</p>;
+      },
+    },
+    {
       field: "date_of_entry",
       headerName: "Entry Date",
       width: 130,
-      valueFormatter: ({ value }) =>
-        value ? new Date(value).toLocaleDateString() : "-",
     },
     {
       field: "status",
@@ -66,9 +107,21 @@ export default function BookRecordTable() {
       headerClassName: "sticky-actions",
       disableColumnMenu: true,
       renderCell: (params) => (
-        <div className="flex gap-2">
+        <div className="flex gap-2 text-gray-100">
           <Tooltip title="Edit" placement="top">
             <FiEdit
+              className="cursor-pointer"
+              onClick={() => handleEdit(params.id)}
+            />
+          </Tooltip>
+          <Tooltip title="Write Off" placement="top">
+            <FiBookOpen
+              className="cursor-pointer"
+              onClick={() => handleEdit(params.id)}
+            />
+          </Tooltip>
+          <Tooltip title="Lost Book" placement="top">
+            <CiWarning
               className="cursor-pointer"
               onClick={() => handleEdit(params.id)}
             />
@@ -84,60 +137,130 @@ export default function BookRecordTable() {
     },
   ];
 
+  // Filtering Logic
+  const filteredRows = bookList.filter((b) => {
+    if (statusFilter === "all") return true;
+    return b.status?.toLowerCase() === statusFilter;
+  });
+
   return (
-    <div className="relative h-[600px] w-full">
+    <div className="relative w-full">
       {showToast && (
         <Toast message={toastMessage} onClose={() => setShowToast(false)} />
       )}
-      <div className="absolute inset-0 overflow-auto">
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          loading={loading}
-          rowHeight={60}
-          headerHeight={50}
-          pageSize={10}
-          rowsPerPageOptions={[10, 25, 50]}
-          disableSelectionOnClick
-          showToolbar
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-              csvOptions: {
-                fieldsToExport: columns
-                  .filter((col) => col.field !== "actions")
-                  .map((col) => col.field),
+      <BookHeaderButtons
+        onStatusChange={setStatusFilter}
+        statusFilter={statusFilter}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
+
+      {viewMode === "table" ? (
+        <div className="h-[600px]">
+          <DataGrid
+            rows={filteredRows}
+            columns={columns}
+            loading={loading}
+            rowHeight={60}
+            headerHeight={50}
+            pageSize={10}
+            disableSelectionOnClick
+            showToolbar
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+                csvOptions: {
+                  fieldsToExport: columns
+                    .filter((c) => c.field !== "actions")
+                    .map((c) => c.field),
+                },
               },
-            },
-          }}
-          sx={{
-            border: "none",
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#F1857C",
-              fontSize: "1rem",
-              color: "#0d0f54",
-            },
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: 600,
-            },
-            "& .MuiDataGrid-cell": {
-              borderBottom: "1px solid #e0f0e0",
-              whiteSpace: "normal",
-              lineHeight: 1.4,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            },
-            /* New sticky-right rules */
-            "& .sticky-actions": {
-              position: "sticky",
-              right: 0,
-              backgroundColor: "#ffa300", // solid background to cover scrolled content
-              zIndex: 1, // above other cells
-            },
-          }}
+            }}
+            sx={{
+              border: "none",
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "#F1857C",
+                fontSize: "1rem",
+                color: "#0d0f54",
+              },
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontWeight: 600,
+              },
+              "& .MuiDataGrid-cell": {
+                borderBottom: "1px solid #e0f0e0",
+                whiteSpace: "normal",
+                lineHeight: 1.4,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              },
+              "& .sticky-actions": {
+                position: "sticky",
+                right: 0,
+                color: "#e3e3e3",
+                backgroundColor: "#333333",
+                zIndex: 1,
+              },
+            }}
+          />
+        </div>
+      ) : (
+        /* Grid View */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-6">
+          {filteredRows.map((row) => (
+            <div
+              key={row.id}
+              className="border rounded-lg p-4 shadow hover:shadow-md transition"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-semibold text-lg">{row.title}</h3>
+                <div className="flex gap-2">
+                  <Tooltip title="Edit">
+                    <FiEdit
+                      className="cursor-pointer"
+                      onClick={() => handleEdit(row.id)}
+                    />
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <FiTrash2
+                      className="cursor-pointer text-red-500"
+                      onClick={() => handleDelete(row.id)}
+                    />
+                  </Tooltip>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Author:</span> {row.author}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">ISBN:</span> {row.isbn}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Publisher:</span> {row.publisher}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Copies:</span>{" "}
+                {row.available_copies}/{row.total_copies}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Entered:</span>{" "}
+                {row.date_of_entry
+                  ? new Date(row.date_of_entry).toLocaleDateString()
+                  : "-"}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showEditForm && (
+        <AddEditBook
+          onClose={() => setShowEditForm(false)}
+          setShowToast={setShowToast}
+          setToastmsg={setToastMessage}
+          existingBook={existingBook}
         />
-      </div>
+      )}
     </div>
   );
 }

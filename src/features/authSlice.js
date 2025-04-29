@@ -4,7 +4,7 @@ const initialState = {
   accessToken: null,
   refreshToken: null,
   userData: null,
-  list: [],
+  userList: [],
 };
 
 const authSlice = createSlice({
@@ -23,14 +23,14 @@ const authSlice = createSlice({
       state.refreshToken = action.payload.refresh;
       state.userData = action.payload.role;
     },
-    setList(state, action) {
-      state.list = action.payload;
+    setUserList(state, action) {
+      state.userList = action.payload;
     },
     clearAuthData(state) {
       state.accessToken = null;
       state.refreshToken = null;
       state.userData = null;
-      state.list = [];
+      state.userList = [];
     },
   },
 });
@@ -39,7 +39,7 @@ export const {
   setAccessToken,
   setRefreshToken,
   login,
-  setList,
+  setUserList,
   clearAuthData,
 } = authSlice.actions;
 

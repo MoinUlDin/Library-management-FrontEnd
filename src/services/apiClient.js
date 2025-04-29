@@ -13,8 +13,8 @@ class ApiClient {
     this.client.interceptors.request.use(
       (config) => {
         const userData = JSON.parse(localStorage.getItem("userData"));
-        if (userData?.accessToken) {
-          config.headers.Authorization = `Bearer ${userData.accessToken}`;
+        if (userData?.access) {
+          config.headers.Authorization = `Bearer ${userData.access}`;
         }
         return config;
       },
@@ -34,13 +34,13 @@ class ApiClient {
         ) {
           originalRequest._retry = true;
           const userData = JSON.parse(localStorage.getItem("userData"));
-          if (userData?.refreshToken) {
+          if (userData?.refresh) {
             try {
               // Step 2: Send request to refresh the token.
               const refreshResponse = await this.client.post(
                 "/api/token/refresh/",
                 {
-                  refresh: userData.refreshToken,
+                  refresh: userData.refresh,
                 }
               );
 
@@ -48,7 +48,7 @@ class ApiClient {
               // Update localStorage with the new access token.
               const updatedUserData = {
                 ...userData,
-                accessToken: newAccessToken,
+                access: newAccessToken,
               };
               localStorage.setItem("userData", JSON.stringify(updatedUserData));
               // Update the Authorization header and retry the original request.

@@ -69,7 +69,7 @@ const Toast = ({
         top: "1rem",
         right: "1rem",
       }}
-      className={`mb-3 z-50 p-4 pr-8 min-w-[300px] bg-white rounded-lg shadow-lg ${className}`}
+      className={`mb-3 z-1000 p-4 pr-8 min-w-[300px] bg-white rounded-lg shadow-lg ${className}`}
     >
       <div className="flex items-center gap-4 justify-between mb-2">
         <p

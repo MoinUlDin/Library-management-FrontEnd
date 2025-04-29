@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import Logo from "../components/childrens/Logo";
-import Title from "../components/childrens/Title";
+import Logo from "../../components/childrens/Logo";
+import Title from "../../components/childrens/Title";
 import {
   TextField,
   IconButton,
@@ -16,13 +16,13 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login } from "../features/authSlice";
-import UserService from "../services/userServices"; // Import UserService
+import { login } from "../../features/authSlice";
+import UserService from "../../services/userServices"; // Import UserService
 import { ImSpinner8 } from "react-icons/im";
-import Toast from "../components/childrens/FloatingMessage";
-import apiClient from "../services/apiClient";
-import bg from "../assets/loginBack.jpg"; // Import your background image
-import { clearAuthData } from "../features/authSlice";
+import Toast from "../../components/childrens/FloatingMessage";
+import apiClient from "../../services/apiClient";
+import bg from "../../assets/LoginBack.jpg"; // Import your background image
+import { clearAuthData } from "../../features/authSlice";
 
 function Login() {
   const dispatch = useDispatch();

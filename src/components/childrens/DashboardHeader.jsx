@@ -2,15 +2,18 @@ import { Tooltip } from "@mui/material";
 import React, { useRef, useState, useEffect } from "react";
 import { FiSettings, FiShare, FiUser } from "react-icons/fi";
 import WidgetsIcon from "@mui/icons-material/Widgets";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import UserService from "../../services/userServices";
 import { clearAuthData } from "../../features/authSlice";
+import BookButtons from "./BookButtons";
+import MemberButtons from "./MemberButtons";
 
 function DashboardHeader() {
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuRef = useRef(null);
 
@@ -45,7 +48,9 @@ function DashboardHeader() {
 
   return (
     <div className="flex w-full h-16 justify-between items-center p-8 bg-white shadow-md">
-      <div></div>
+      {location.pathname.includes("book") && <BookButtons />}
+      {location.pathname.endsWith("dashboard") && <div></div>}
+      {location.pathname.includes("member") && <MemberButtons />}
       <div className="flex items-center text-lg gap-6">
         <WidgetsIcon className="text-amber-700 ptr" />
         <div
@@ -55,13 +60,11 @@ function DashboardHeader() {
         >
           <FiUser />
           {expanded && (
-            <div className="absolute overflow-hidden flex flex-col gap-2 text-white bg-gray-600 rounded-lg z-1000 top-10 -left-2">
-              <span className="hover:bg-amber-700 p-3 text-center">
-                Profile
-              </span>
+            <div className="absolute overflow-hidden flex justify-start flex-col gap-2 text-white bg-gray-600 rounded-lg z-1000 top-10 -left-10">
+              <span className="hover:bg-amber-700 p-3 px-10 ">Profile</span>
               <span
                 onClick={handleLogout}
-                className="hover:bg-amber-700 p-3 text-center"
+                className="hover:bg-amber-700 p-3 px-8 "
               >
                 Logout
               </span>

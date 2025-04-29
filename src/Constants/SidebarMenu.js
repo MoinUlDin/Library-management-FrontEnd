@@ -15,13 +15,13 @@ const MENU = [
     path: "/dashboard",
   },
   {
-    title: "Book Management",
+    title: "book",
     icon: FiBookOpen,
     path: "/dashboard/books",
     children: [
       {
         title: "Book Record",
-        path: "/dashboard/books/records",
+        path: "/dashboard/books/record",
       },
       {
         title: "Issue Book",
@@ -38,7 +38,7 @@ const MENU = [
     ],
   },
   {
-    title: "Member Management",
+    title: "member",
     icon: FiUsers,
     path: "/dashboard/members",
     children: [
@@ -65,7 +65,7 @@ const MENU = [
     ],
   },
   {
-    title: "Online Reservations",
+    title: "reservations",
     icon: FiCalendar,
     path: "/dashboard/reservations",
     children: [
@@ -80,7 +80,7 @@ const MENU = [
     ],
   },
   {
-    title: "Reports",
+    title: "reports",
     icon: FiBarChart2,
     path: "/dashboard/reports",
     children: [
@@ -107,7 +107,7 @@ const MENU = [
     ],
   },
   {
-    title: "Settings",
+    title: "settings",
     icon: FiSettings,
     path: "/dashboard/settings",
     children: [

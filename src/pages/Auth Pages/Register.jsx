@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import UserService from "../services/userServices"; // Service for API calls
+import UserService from "../../services/userServices"; // Service for API calls
 import { ImSpinner8 } from "react-icons/im"; // Import spinner icon
 import { TextField, IconButton, InputAdornment } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import Toast from "../components/childrens/FloatingMessage";
-import Logo from "../components/childrens/Logo";
+import Toast from "../../components/childrens/FloatingMessage";
+import Logo from "../../components/childrens/Logo";
 
 function Register() {
   const navigate = useNavigate();
