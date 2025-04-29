@@ -245,7 +245,15 @@ function AddMember() {
         <DataGrid
           rows={memberlist}
           columns={columns}
-          // loading={loading}
+          loading={loading}
+          pageSizeOptions={[
+            10,
+            25,
+            50,
+            100,
+            { value: 1000, label: "1,000" },
+            { value: -1, label: "All" },
+          ]}
           rowHeight={60}
           headerHeight={50}
           disableSelectionOnClick

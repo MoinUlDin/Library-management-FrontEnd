@@ -60,6 +60,21 @@ function PendingApprovals() {
         setSendingRequest(false);
       });
   };
+  const handleRejectSingle = (id) => {
+    setSendingRequest(true);
+    MemberServices.setMemberRejected(id, dispatch)
+      .then((res) => {
+        console.log(res);
+        setToastMessage(res.detail);
+        setShowToast(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setSendingRequest(false);
+      });
+  };
   const handleApproveMember = () => {
     console.log("Approved actions clicked. SelectionModel", selectionModel);
     Promise.all(
@@ -190,7 +205,7 @@ function PendingApprovals() {
                 <FaUserXmark
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleRejectMember(params.row.id);
+                    handleRejectSingle(params.row.id);
                   }}
                   className="ptr text-2xl text-orange-600"
                 />
@@ -227,15 +242,7 @@ function PendingApprovals() {
           </div>
         </div>
       )}
-      {/* Header Buttons */}
-      <div className="flex items-center justify-end px-8">
-        <button
-          onClick={() => handleShowForm("new")}
-          className="px-3 py-2 ptr bg-amber-500 rounded hover:bg-amber-700 "
-        >
-          Issue Book
-        </button>
-      </div>
+
       {/* Bulk Buttons */}
       <div className="px-1 my-6 overflow-x-auto relative">
         <div className="flex gap-3 absolute top-2 left-2 z-100">
@@ -259,14 +266,16 @@ function PendingApprovals() {
           disableRowSelectionOnClick
           showToolbar
           checkboxSelection
-          rowSelectionModel={selectionModel}
-          onRowSelectionModelChange={(newSelection) => {
-            setSelectionModel(newSelection);
+          initialState={{
+            pagination: {
+              paginationModel: { pageSize: 5, page: 0 },
+            },
           }}
-          pagination
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          pageSizeOptions={[10, 25, 50]}
+          pageSizeOptions={[5, 10, 50, { value: -1, label: "All" }]}
+          // rowSelectionModel={new Set(selectionModel)}
+          // onRowSelectionModelChange={(newSelection) => {
+          //   setSelectionModel(Array.from(newSelection));
+          // }}
           slotProps={{
             toolbar: {
               showQuickFilter: true,
